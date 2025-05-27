@@ -1,6 +1,6 @@
 {
   "name": "@dnl-fm/done-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript client library for Done message queue API",
   "license": "MIT",
   "repository": {
