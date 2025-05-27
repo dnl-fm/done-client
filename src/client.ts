@@ -7,13 +7,68 @@ import type {
   SendMessageResponse,
 } from "./types.ts";
 
+/**
+ * Client for interacting with the Done message queue API.
+ *
+ * @example
+ * ```typescript
+ * const client = DoneClient.create("https://your-done-instance.com", "your-auth-token");
+ *
+ * // Send a message
+ * const response = await client.sendMessage("https://webhook.example.com", {
+ *   userId: 123
+ * });
+ *
+ * // Send with delay
+ * await client.sendMessage("https://webhook.example.com", { data: "test" }, {
+ *   delay: "5m"
+ * });
+ * ```
+ */
 export class DoneClient {
   private config: DoneClientConfig;
 
+  /**
+   * Creates a new DoneClient instance.
+   *
+   * @param config - Configuration options for the client
+   */
   constructor(config: DoneClientConfig) {
     this.config = config;
   }
 
+  /**
+   * Sends a message to the Done queue for delayed delivery.
+   *
+   * @param callbackUrl - The URL that will be called when the message is delivered
+   * @param body - Optional message payload to include in the callback
+   * @param options - Additional options for message delivery
+   * @returns Promise resolving to message ID and scheduled delivery time
+   *
+   * @example
+   * ```typescript
+   * // Send immediate message
+   * const response = await client.sendMessage("https://api.example.com/webhook", {
+   *   orderId: "12345",
+   *   action: "process"
+   * });
+   *
+   * // Send with 5 minute delay
+   * await client.sendMessage("https://api.example.com/webhook", { data: "test" }, {
+   *   delay: "5m"
+   * });
+   *
+   * // Send with custom headers
+   * await client.sendMessage("https://api.example.com/webhook", { data: "test" }, {
+   *   headers: {
+   *     "Authorization": "Bearer token123",
+   *     "X-Custom-ID": "order-456"
+   *   }
+   * });
+   * ```
+   *
+   * @throws Error if the API request fails
+   */
   async sendMessage(
     callbackUrl: string,
     body?: unknown,
@@ -77,6 +132,21 @@ export class DoneClient {
     };
   }
 
+  /**
+   * Retrieves detailed information about a specific message.
+   *
+   * @param messageId - The unique identifier of the message to retrieve
+   * @returns Promise resolving to the complete message object
+   *
+   * @example
+   * ```typescript
+   * const message = await client.getMessage("msg_abc123");
+   * console.log(`Message status: ${message.status}`);
+   * console.log(`Attempts: ${message.attempts}/${message.maxAttempts}`);
+   * ```
+   *
+   * @throws Error if the message is not found or API request fails
+   */
   async getMessage(messageId: string): Promise<DoneMessage> {
     const response = await fetch(`${this.config.baseUrl}/v1/${messageId}`, {
       headers: {
@@ -102,6 +172,29 @@ export class DoneClient {
     };
   }
 
+  /**
+   * Retrieves a list of messages filtered by their current status.
+   *
+   * @param status - The message status to filter by
+   * @returns Promise resolving to an array of message status information
+   *
+   * @example
+   * ```typescript
+   * import { MessageStatus } from "jsr:@dnl-fm/done-client";
+   *
+   * // Get all queued messages
+   * const queuedMessages = await client.getMessagesByStatus(MessageStatus.QUEUED);
+   *
+   * // Get all failed messages
+   * const failedMessages = await client.getMessagesByStatus(MessageStatus.DLQ);
+   *
+   * for (const msg of queuedMessages) {
+   *   console.log(`Message ${msg.id}: ${msg.attempts} attempts`);
+   * }
+   * ```
+   *
+   * @throws Error if the API request fails
+   */
   async getMessagesByStatus(
     status: MessageStatus,
   ): Promise<MessageStatusInfo[]> {
@@ -130,6 +223,22 @@ export class DoneClient {
     }));
   }
 
+  /**
+   * Creates a new DoneClient instance with the provided configuration.
+   * This is a convenience method for creating clients.
+   *
+   * @param baseUrl - Base URL of the Done API instance
+   * @param authToken - Authentication token for API access
+   * @returns A new DoneClient instance
+   *
+   * @example
+   * ```typescript
+   * const client = DoneClient.create(
+   *   "https://your-done-instance.com",
+   *   "your-auth-token"
+   * );
+   * ```
+   */
   static create(baseUrl: string, authToken: string): DoneClient {
     return new DoneClient({ baseUrl, authToken });
   }
