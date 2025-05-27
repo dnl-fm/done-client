@@ -37,13 +37,15 @@ Deno.test("DoneClient - sendMessage with basic payload", async () => {
     assertEquals(headers?.["Content-Type"], "application/json");
     assertEquals(init?.body, JSON.stringify({ test: "data" }));
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        messageId: "msg-123",
-        scheduledAt: "2024-01-01T12:00:00Z",
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          messageId: "msg-123",
+          scheduledAt: "2024-01-01T12:00:00Z",
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -62,13 +64,15 @@ Deno.test("DoneClient - sendMessage with delay", async () => {
     const headers = init?.headers as Record<string, string>;
     assertEquals(headers?.["Done-Delay"], "5m");
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        messageId: "msg-456",
-        scheduledAt: "2024-01-01T12:05:00Z",
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          messageId: "msg-456",
+          scheduledAt: "2024-01-01T12:05:00Z",
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -89,13 +93,15 @@ Deno.test("DoneClient - sendMessage with Date delay", async () => {
     const headers = init?.headers as Record<string, string>;
     assertEquals(headers?.["Done-Delay"], delayDate.toISOString());
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        messageId: "msg-789",
-        scheduledAt: delayDate.toISOString(),
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          messageId: "msg-789",
+          scheduledAt: delayDate.toISOString(),
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -120,13 +126,15 @@ Deno.test("DoneClient - sendMessage with all options", async () => {
     );
     assertEquals(headers?.["Done-Custom-Header"], "custom-value");
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        messageId: "msg-full",
-        scheduledAt: "2024-01-01T12:00:00Z",
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          messageId: "msg-full",
+          scheduledAt: "2024-01-01T12:00:00Z",
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -146,13 +154,15 @@ Deno.test("DoneClient - sendMessage without body", async () => {
   mockFetch = (_input, init) => {
     assertEquals(init?.body, undefined);
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        messageId: "msg-no-body",
-        scheduledAt: "2024-01-01T12:00:00Z",
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          messageId: "msg-no-body",
+          scheduledAt: "2024-01-01T12:00:00Z",
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -165,10 +175,12 @@ Deno.test("DoneClient - sendMessage handles errors", async () => {
   const cleanup = setupMockFetch();
 
   mockFetch = () => {
-    return Promise.resolve(new Response("Bad Request", {
-      status: 400,
-      statusText: "Bad Request",
-    }));
+    return Promise.resolve(
+      new Response("Bad Request", {
+        status: 400,
+        statusText: "Bad Request",
+      }),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -190,20 +202,22 @@ Deno.test("DoneClient - getMessage", async () => {
     const headers = init?.headers as Record<string, string>;
     assertEquals(headers?.["Authorization"], `Bearer ${TEST_AUTH_TOKEN}`);
 
-    return Promise.resolve(new Response(
-      JSON.stringify({
-        id: "msg-123",
-        callbackUrl: "https://example.com/webhook",
-        body: { test: "data" },
-        status: MessageStatus.QUEUED,
-        attempts: 0,
-        maxAttempts: 3,
-        createdAt: "2024-01-01T12:00:00Z",
-        updatedAt: "2024-01-01T12:00:00Z",
-        scheduledAt: "2024-01-01T12:05:00Z",
-      }),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify({
+          id: "msg-123",
+          callbackUrl: "https://example.com/webhook",
+          body: { test: "data" },
+          status: MessageStatus.QUEUED,
+          attempts: 0,
+          maxAttempts: 3,
+          createdAt: "2024-01-01T12:00:00Z",
+          updatedAt: "2024-01-01T12:00:00Z",
+          scheduledAt: "2024-01-01T12:05:00Z",
+        }),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
@@ -225,24 +239,26 @@ Deno.test("DoneClient - getMessagesByStatus", async () => {
     const headers = init?.headers as Record<string, string>;
     assertEquals(headers?.["Authorization"], `Bearer ${TEST_AUTH_TOKEN}`);
 
-    return Promise.resolve(new Response(
-      JSON.stringify([
-        {
-          id: "msg-1",
-          status: MessageStatus.QUEUED,
-          attempts: 0,
-          scheduledAt: "2024-01-01T12:00:00Z",
-        },
-        {
-          id: "msg-2",
-          status: MessageStatus.QUEUED,
-          attempts: 1,
-          scheduledAt: "2024-01-01T12:00:00Z",
-          lastAttemptAt: "2024-01-01T11:00:00Z",
-        },
-      ]),
-      { status: 200 },
-    ));
+    return Promise.resolve(
+      new Response(
+        JSON.stringify([
+          {
+            id: "msg-1",
+            status: MessageStatus.QUEUED,
+            attempts: 0,
+            scheduledAt: "2024-01-01T12:00:00Z",
+          },
+          {
+            id: "msg-2",
+            status: MessageStatus.QUEUED,
+            attempts: 1,
+            scheduledAt: "2024-01-01T12:00:00Z",
+            lastAttemptAt: "2024-01-01T11:00:00Z",
+          },
+        ]),
+        { status: 200 },
+      ),
+    );
   };
 
   const client = DoneClient.create(TEST_BASE_URL, TEST_AUTH_TOKEN);
