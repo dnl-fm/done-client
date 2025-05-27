@@ -1,0 +1,37 @@
+name: Publish to JSR
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Deno
+      uses: denoland/setup-deno@v1
+      with:
+        deno-version: v1.x
+        
+    - name: Check formatting
+      run: deno fmt --check
+      
+    - name: Run linter
+      run: deno lint
+      
+    - name: Type check
+      run: deno check src/mod.ts
+      
+    - name: Run tests
+      run: deno test --allow-net
+      
+    - name: Publish to JSR
+      run: deno publish

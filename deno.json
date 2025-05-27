@@ -2,6 +2,11 @@
   "name": "@dnl-fm/done-client",
   "version": "0.1.0",
   "description": "TypeScript client library for Done message queue API",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dnl-fm/done-client.git"
+  },
   "exports": "./src/mod.ts",
   "tasks": {
     "test": "deno test --allow-net",
@@ -13,5 +18,11 @@
   "compilerOptions": {
     "strict": true,
     "exactOptionalPropertyTypes": true
+  },
+  "publish": {
+    "exclude": [
+      ".github/",
+      "tests/"
+    ]
   }
 }
