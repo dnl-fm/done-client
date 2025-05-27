@@ -14,32 +14,35 @@ import { DoneClient } from "jsr:@dnl-fm/done-client";
 import { DoneClient } from "jsr:@dnl-fm/done-client";
 
 // Create client
-const client = DoneClient.create("https://your-done-instance.com", "your-auth-token");
+const client = DoneClient.create(
+  "https://your-done-instance.com",
+  "your-auth-token",
+);
 
 // Send immediate message
 const response = await client.sendMessage("https://example.com/webhook", {
   userId: 123,
-  action: "process"
+  action: "process",
 });
 
 // Send delayed message (5 minutes)
 await client.sendMessage("https://example.com/webhook", { data: "test" }, {
-  delay: "5m"
+  delay: "5m",
 });
 
 // Send message at specific time
 await client.sendMessage("https://example.com/webhook", { data: "test" }, {
-  delay: new Date("2024-01-01T12:00:00Z")
+  delay: new Date("2024-01-01T12:00:00Z"),
 });
 
 // Send message with custom callback headers
 // Headers are automatically prefixed with "Done-" and will be included in the callback
 await client.sendMessage("https://example.com/webhook", { data: "test" }, {
   headers: {
-    "Authorization": "Bearer token123",  // Becomes "Authorization: Bearer token123" in callback
-    "X-Custom-ID": "order-456",         // Becomes "x-custom-id: order-456" in callback
-    "Content-Type": "application/json"  // Becomes "content-type: application/json" in callback
-  }
+    "Authorization": "Bearer token123", // Becomes "Authorization: Bearer token123" in callback
+    "X-Custom-ID": "order-456", // Becomes "x-custom-id: order-456" in callback
+    "Content-Type": "application/json", // Becomes "content-type: application/json" in callback
+  },
 });
 
 // Send message with all options
@@ -50,8 +53,8 @@ await client.sendMessage("https://example.com/webhook", { data: "test" }, {
   failureCallback: "https://example.com/failure-webhook",
   headers: {
     "Authorization": "Bearer token123",
-    "X-Tenant-ID": "tenant-abc"
-  }
+    "X-Tenant-ID": "tenant-abc",
+  },
 });
 
 // Get message details
@@ -64,15 +67,16 @@ const queuedMessages = await client.getMessagesByStatus(MessageStatus.QUEUED);
 
 ## Callback Headers
 
-When you specify headers in the `headers` option, Done will include them in the callback request to your webhook:
+When you specify headers in the `headers` option, Done will include them in the
+callback request to your webhook:
 
 ```typescript
 // When you send:
 await client.sendMessage("https://example.com/webhook", { name: "John" }, {
   headers: {
     "Authorization": "Bearer secret123",
-    "X-User-ID": "user456"
-  }
+    "X-User-ID": "user456",
+  },
 });
 
 // Done will make this callback request:
@@ -100,13 +104,17 @@ Creates a new Done client instance.
 Sends a message to the queue.
 
 **Options:**
+
 - `delay`: Delay as string ("5m", "1h") or Date object
 - `notBefore`: Earliest execution time
-- `headers`: Custom headers to include in the callback request. These are automatically prefixed with "Done-" in the API call and the prefix is stripped when making the callback
+- `headers`: Custom headers to include in the callback request. These are
+  automatically prefixed with "Done-" in the API call and the prefix is stripped
+  when making the callback
 - `maxAttempts`: Maximum retry attempts
 - `failureCallback`: URL to call on failure
 
 **Returns:** `Promise<SendMessageResponse>`
+
 ```typescript
 {
   messageId: string;
@@ -119,6 +127,7 @@ Sends a message to the queue.
 Retrieves message details by ID.
 
 **Returns:** `Promise<DoneMessage>`
+
 ```typescript
 {
   id: string;
@@ -141,9 +150,12 @@ Retrieves message details by ID.
 Lists messages by status using `MessageStatus` enum values.
 
 **Parameters:**
-- `status`: `MessageStatus.CREATED | MessageStatus.QUEUED | MessageStatus.DELIVER | MessageStatus.SENT | MessageStatus.RETRY | MessageStatus.DLQ | MessageStatus.ARCHIVED`
+
+- `status`:
+  `MessageStatus.CREATED | MessageStatus.QUEUED | MessageStatus.DELIVER | MessageStatus.SENT | MessageStatus.RETRY | MessageStatus.DLQ | MessageStatus.ARCHIVED`
 
 **Returns:** `Promise<MessageStatusInfo[]>`
+
 ```typescript
 {
   id: string;

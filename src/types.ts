@@ -5,7 +5,7 @@ export enum MessageStatus {
   SENT = "SENT",
   RETRY = "RETRY",
   DLQ = "DLQ",
-  ARCHIVED = "ARCHIVED"
+  ARCHIVED = "ARCHIVED",
 }
 
 export interface DoneMessage {
