@@ -1,0 +1,17 @@
+{
+  "name": "@dnl-fm/done-client",
+  "version": "0.1.0",
+  "description": "TypeScript client library for Done message queue API",
+  "exports": "./src/mod.ts",
+  "tasks": {
+    "test": "deno test --allow-net",
+    "fmt": "deno fmt",
+    "lint": "deno lint",
+    "check": "deno check src/mod.ts"
+  },
+  "imports": {},
+  "compilerOptions": {
+    "strict": true,
+    "exactOptionalPropertyTypes": true
+  }
+}
